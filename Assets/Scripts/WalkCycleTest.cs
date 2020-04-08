@@ -5,27 +5,57 @@ using UnityEngine;
 public class WalkCycleTest : MonoBehaviour
 {
     public Transform Hips;
+    Vector3 startPosition;
     float LegLength = 1000;
+    float footOffset = 0.75f;
+    public float gate = 15;
+    public float treadOffset = 8;
+    public float height = 5;
+    public float stepOffset = 0;
+    
 
 
 
     // Start is called before the first frame update
     void Start()
     {
-        transform.position = FindPointUnderHips();
+        startPosition = FindPointUnderHips();
+        print(startPosition);
+        startPosition = new Vector3(startPosition.x,startPosition.y + footOffset, startPosition.z);
+        print(startPosition);
+        transform.position = startPosition;
+        //Vector3.down
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        Debug.DrawRay(Hips.position, Vector3.down, new Color(255, 0, 0,255), 100000f, false);
+        transform.position = new Vector3( startPosition.x, CalcFootLift(), CalcFootSlide());
+        //Debug.DrawRay(Hips.position, Hips.up*10000 /*Vector3.down*10000*/, new Color(255, 0, 0,255), 1f, false);
     }
 
 
+    //TODO:Animate baised on ray casts
     void CalcGate() { 
     
     
     }
+
+    float CalcFootSlide() {
+        //print(Mathf.Cos(Time.time) * (startPosition.z + gate));
+        return  ((startPosition.z - treadOffset) + (Mathf.Cos(stepOffset + Time.time * Mathf.PI) * gate));
+    }
+
+    float CalcFootLift() {
+        float mult = WalkCurve(stepOffset+1 + Time.time);
+        if (mult < 0) {
+            mult = 0;
+        }
+        return startPosition.y + (mult * height);
+    }
+
+    //float CalcWalk
 
     //TODO: make this relaitce to the body
     Vector3 FindPointUnderHips() {
@@ -47,7 +77,7 @@ public class WalkCycleTest : MonoBehaviour
             return new RaycastHit();
         }
         Ray FromHips = new Ray(Hips.position, direction);
-        Debug.DrawRay(Hips.position, direction, new Color(255,0,0), 100000f,false);
+        Debug.DrawRay(Hips.position, direction*1000, new Color(255,0,0), 100000f,false);
         Physics.Raycast(FromHips, out RaycastHit hit);
         print(hit);
         return hit;
