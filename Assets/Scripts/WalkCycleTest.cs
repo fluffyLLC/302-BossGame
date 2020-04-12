@@ -29,9 +29,9 @@ public class WalkCycleTest : MonoBehaviour
     /// </summary>
     public float gate = 15;
 
-   /// <summary>
-   /// This shifts the center of the player's tread behind the body (positive values backwards, negative values forwards) 
-   /// </summary>
+    /// <summary>
+    /// This shifts the center of the player's tread behind the body (positive values backwards, negative values forwards) 
+    /// </summary>
     public float treadOffset = 8;
 
     /// <summary>
@@ -43,6 +43,9 @@ public class WalkCycleTest : MonoBehaviour
     /// This is used to offset feet from one another
     /// </summary>
     public float stepOffset = 0;
+    
+    [Range(1,2)]
+    public float stepMod;
     
 
 
@@ -148,7 +151,7 @@ public class WalkCycleTest : MonoBehaviour
     /// <returns>The value at x</returns>
     public float WalkCurve(float x)
     {
-        float y = Mathf.Sin(x * Mathf.PI);
+        float y = (Mathf.Sin(x * Mathf.PI))/stepMod;
 
         return WalkCurve(x, y);
     }
