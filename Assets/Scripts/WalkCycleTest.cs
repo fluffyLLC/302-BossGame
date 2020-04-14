@@ -22,7 +22,7 @@ public class WalkCycleTest : MonoBehaviour
     /// <summary>
     /// How high above the ground should the foot be positioned in order to ensure a correct apperence
     /// </summary>
-    float footHeightOffset = 0.75f;
+    public float footHeightOffset = 0.75f;
 
     /// <summary>
     /// This is half the leangth of a single step
@@ -39,14 +39,26 @@ public class WalkCycleTest : MonoBehaviour
     /// </summary>
     public float height = 5;
 
+    float sinShift = Mathf.PI;
+
     /// <summary>
     /// This is used to offset feet from one another
     /// </summary>
     public float stepOffset = 0;
     
+    /// <summary>
+    /// Adjusts the curve of the step
+    /// </summary>
     [Range(1,2)]
-    public float stepMod;
-    
+    public float stepMod = 2;
+
+    /// <summary>
+    /// How fast should steps be taken
+    /// </summary>
+    [Range(0,6)]
+    public float speed = 1;
+
+    //float speed;
 
 
 
@@ -59,11 +71,14 @@ public class WalkCycleTest : MonoBehaviour
         //print(startPosition);
         transform.position = startPosition; //start the foot at the start position
         //Vector3.down
+
+        //speedSave = speed;
     }
 
     // Update is called once per frame
     void Update()
     {
+        //s/peed = 1 + speedSave * Time.deltaTime;
         transform.position = new Vector3( startPosition.x, CalcFootLift(), CalcFootSlide());
         //Debug.DrawRay(Hips.position, Hips.up*10000 /*Vector3.down*10000*/, new Color(255, 0, 0,255), 1f, false);
     }
@@ -82,11 +97,16 @@ public class WalkCycleTest : MonoBehaviour
     /// <returns>The z position of the foot baised on it's starting position</returns>
     float CalcFootSlide() {
         //print(Mathf.Cos(Time.time) * (startPosition.z + gate));
-        return  ((startPosition.z - treadOffset) + (Mathf.Cos(stepOffset + Time.time * Mathf.PI) * gate));
+        //float x = Time.time;
+
+
+        return  ((startPosition.z - treadOffset) + (Mathf.Cos(((Time.time * Mathf.PI) * speed)+stepOffset) * gate));
     }
 
     float CalcFootLift() {
-        float mult = WalkCurve(stepOffset+1 + Time.time);
+        float mult = WalkCurve(Time.time);
+        //print(Time.time);
+        //print(WalkCurve(stepOffset + 1 + Time.time));
         if (mult < 0) {
             mult = 0;
         }
@@ -151,11 +171,21 @@ public class WalkCycleTest : MonoBehaviour
     /// <returns>The value at x</returns>
     public float WalkCurve(float x)
     {
-        float y = (Mathf.Sin(x * Mathf.PI))/stepMod;
+        //print("x*PI:" + (x * Mathf.PI));
+        
+        float a = x * Mathf.PI;
 
-        return WalkCurve(x, y);
+        float m = stepMod * speed;
+
+        float offset = stepOffset + sinShift;
+
+        float y = (Mathf.Sin((a*speed) + offset))/m;
+        
+
+        return Mathf.Sin((((a - y)) * speed) + offset);
     }
 
+    /*
     /// <summary>
     /// Modified sin wave for the height of walk cycle
     /// </summary>
@@ -164,9 +194,12 @@ public class WalkCycleTest : MonoBehaviour
     /// <returns>The value at x and y</returns>
     public float WalkCurve(float x,float y) {
 
+        float a = x * Mathf.PI;
+        float offset = stepOffset + sinShift;
 
-        return Mathf.Sin(x * Mathf.PI - y);
+        return Mathf.Sin((((a - y))*speed) + offset);
     }
+    */
 
    
 }
